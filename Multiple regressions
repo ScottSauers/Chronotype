@@ -1,1 +1,22 @@
-#example code goes here
+library(broom)
+
+# list of dependent variables
+dep_vars <- c("Ave_TST_EEG", "Ave_SE_EEG", "avg_eeg_SOL", "eeg_waso_calc", "Ave_N2N3_Avetime", "Ave_REM_time", "Ave_REM_Lat", "sp_less_than_1_swa_nrem_avg", "sp_swa_low_1_to_2_an_nrem_avg", "sp_swa_med_2_to_3_an_nrem_avg", "sp_swa_hi_3_to_4_an_nrem_avg", "ACT_Ave_TST", "Ave_SE_act", "Average_SOL_ACT", "waso_act_calc", "Avg_ACT_awakens", "tst_sr", "sr_sol", "Avg_SR_awakens")
+
+# loop through each dependent variable
+for (dep_var in dep_vars) {
+  model <- lm(as.formula(paste0(dep_var, " ~ Chronotype_sleep_rise + Age_sleep + Gender_NUM + Race_AA + CDR_1neg_or_2pos + ApoE4_status + Ab42_40_ratio + AllApneaHypopneaIndexCALCULATED + TotalPLMIPLMAICALCULATED")), data = qdata)
+  model <- tidy(model, .id = ".")
+
+  # Add a Significance column based on p-values
+  model$Significance <- ifelse(model$p.value <= 0.0001, "****", 
+                               ifelse(model$p.value <= 0.001, "***",
+                                      ifelse(model$p.value <= 0.01, "**",
+                                             ifelse(model$p.value <= 0.05, "*", 
+                                                    ifelse(model$p.value <= 0.1, ".", "")))))
+
+  # write the model output to a .csv file
+  title <- data.frame(. = dep_var)
+  write.table(title, "/Users/Scott/Downloads/reg_cpl_outpu3t.csv", append = TRUE, sep = ",", row.names = FALSE, col.names = TRUE)
+  write.table(model, "/Users/Scott/Downloads/reg_cpl_outpu3t.csv", append = TRUE, sep = ",", row.names = FALSE)
+}
