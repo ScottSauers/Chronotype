@@ -19,7 +19,7 @@ plot <- ggplot(data = mctqdata, aes(x = Chronotype_sleep_rise, y = MCTQ)) +
     ylab("MCTQ result") +
     scale_y_continuous(limits = c(0, 5)) +
     # Compute the correlation coefficient (r), p-value and 95% CI
-    ylab("MCTQ result") +
+    ylab("MCTQ Result") +
     scale_y_continuous(limits = c(0, 5)) +
     {
         corr_result <- cor.test(~ Chronotype_sleep_rise + MCTQ, data = mctqdata)
