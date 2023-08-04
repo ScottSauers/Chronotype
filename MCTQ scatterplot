@@ -1,0 +1,55 @@
+library(ggplot2)
+# Create the scatterplot with line of best fit
+plot <- ggplot(data = mctqdata, aes(x = Chronotype_sleep_rise, y = MCTQ)) + 
+    geom_point(color = "#0073C2FF", size = 2, alpha = 0.6, stroke = 1) +  
+    geom_smooth(method = "lm", se = TRUE, color = "black", fill = "#C0C0C0", alpha = 0.2) + 
+    theme_minimal() +  
+    theme(axis.line = element_line(color = "#0A000A"),  
+          axis.text.x = element_text(size = 18, color = "#0A000A"),  
+          axis.text.y = element_text(size = 18, color = "#0A000A"),  
+          axis.title.x = element_text(size = 18, color = "#0A000A"),  
+          axis.title.y = element_text(size = 18, color = "#0A000A"), 
+          plot.title = element_text(size = 18, color = "#0073C2FF"), 
+          plot.subtitle = element_text(size = 18, color = "#0A000A"), 
+          panel.grid.major = element_line(color = "#E5E5E5"), 
+          panel.background = element_rect(fill = "#FFFFFFFF"), 
+          plot.background = element_rect(fill = "#FFFFFFFF"), 
+          panel.border = element_blank()) + 
+    xlab("Midpoint of Sleep (Chronotype)") +
+    ylab("MCTQ result") +
+    scale_y_continuous(limits = c(0, 5)) +
+    # Compute the correlation coefficient (r), p-value and 95% CI
+    ylab("MCTQ result") +
+    scale_y_continuous(limits = c(0, 5)) +
+    {
+        corr_result <- cor.test(~ Chronotype_sleep_rise + MCTQ, data = mctqdata)
+        
+        p1 <- annotate(geom = "text", 
+                       x = Inf, y = Inf, 
+                       label = paste0("r = ", round(corr_result$estimate, 3), 
+                                      " (CI: ", round(corr_result$conf.int[1], 3), ", ", round(corr_result$conf.int[2], 3), ")"), 
+                       hjust = 1.01, vjust = 1.5, size = 5, color = "black",  # Adjust hjust and vjust
+                       family = "Arial", 
+                       fontface = "bold", 
+                       check_overlap = TRUE)
+        
+        p2 <- annotate(geom = "text", 
+                       x = Inf, y = Inf,  
+                       label = paste0("p = ", format.pval(corr_result$p.value, digits = 3, eps = 0.00001)), 
+                       hjust = 2.474, vjust = 3.5, size = 5, color = "black",  
+                       family = "Arial", 
+                       fontface = "bold", 
+                       check_overlap = TRUE)
+        
+        list()
+    }
+
+# Generate a random number for the file name
+random_number <- as.integer(runif(1, 1, 1e6))
+
+# Save plot as a .tiff and .png file on the desktop with dimensions 800 by 800
+tiff_file <- sprintf("~/Desktop/plot_%d.tiff", random_number)
+png_file <- sprintf("~/Desktop/plot_%d.png", random_number)
+
+ggsave(tiff_file, plot = plot, width = 2000, height = 2000, units = "px")
+ggsave(png_file, plot = plot, width = 2000, height = 2000, units = "px")
